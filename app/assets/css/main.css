@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#fafafa] text-[#0a0a0a] font-sans;
+  }
+}
+
+@layer components {
+  .prose-harley h2 {
+    @apply text-[#ff6600] font-bold text-2xl mt-8 mb-4;
+  }
+  .prose-harley a {
+    @apply text-[#ff6600] hover:text-[#cc5200] underline;
+  }
+  .prose-harley blockquote {
+    @apply border-l-4 border-[#ff6600] pl-4 italic text-gray-600 my-4;
+  }
+  .prose-harley code {
+    @apply bg-gray-100 text-[#cc5200] px-1.5 py-0.5 rounded text-sm;
+  }
+  .prose-harley pre code {
+    @apply bg-transparent text-inherit p-0;
+  }
+}
