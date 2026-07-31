@@ -1,6 +1,16 @@
 <template>
   <div class="max-w-4xl mx-auto px-4 py-12">
     <NuxtLink to="/emplois" class="text-harley-orange hover:underline text-sm">← Retour aux offres</NuxtLink>
+
+    <div v-if="submitted" class="mt-8 bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+      <p class="text-green-800 font-semibold">Merci ! Votre offre a bien été reçue.</p>
+      <p class="text-green-700 text-sm mt-2">Elle sera mise en ligne dès qu'elle aura été validée par notre équipe.</p>
+      <NuxtLink to="/emplois" class="inline-block mt-4 bg-harley-orange hover:bg-harley-orange-dark text-white px-6 py-2.5 rounded-lg font-semibold transition">
+        Retour aux offres
+      </NuxtLink>
+    </div>
+
+    <template v-else>
     <h1 class="text-3xl font-bold mt-4 mb-8">Déposer une offre</h1>
 
     <form @submit.prevent="submit" class="space-y-6">
@@ -54,13 +64,13 @@
         {{ loading ? 'Envoi...' : 'Déposer l\'offre' }}
       </button>
     </form>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ middleware: ['auth'] })
 
-const router = useRouter()
 const title = ref('')
 const company = ref('')
 const location = ref('')
@@ -71,6 +81,7 @@ const salaryRange = ref('')
 const companyWebsite = ref('')
 const error = ref('')
 const loading = ref(false)
+const submitted = ref(false)
 
 async function submit() {
   error.value = ''
@@ -84,7 +95,7 @@ async function submit() {
         salaryRange: salaryRange.value, companyWebsite: companyWebsite.value,
       },
     })
-    router.push('/emplois')
+    submitted.value = true
   } catch (e: any) {
     error.value = e.data?.message || 'Erreur lors du dépôt'
   } finally {

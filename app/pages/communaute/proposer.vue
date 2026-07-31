@@ -1,6 +1,16 @@
 <template>
   <div class="max-w-4xl mx-auto px-4 py-12">
     <NuxtLink to="/communaute" class="text-harley-orange hover:underline text-sm">← Retour</NuxtLink>
+
+    <div v-if="submitted" class="mt-8 bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+      <p class="text-green-800 font-semibold">Merci ! Votre article a bien été reçu.</p>
+      <p class="text-green-700 text-sm mt-2">Il sera mis en ligne dès qu'il aura été validé par notre équipe.</p>
+      <NuxtLink to="/communaute" class="inline-block mt-4 bg-harley-orange hover:bg-harley-orange-dark text-white px-6 py-2.5 rounded-lg font-semibold transition">
+        Retour à la communauté
+      </NuxtLink>
+    </div>
+
+    <template v-else>
     <h1 class="text-3xl font-bold mt-4 mb-8">Proposer un article</h1>
 
     <form @submit.prevent="submit" class="space-y-6">
@@ -25,19 +35,20 @@
         {{ loading ? 'Envoi...' : 'Soumettre l\'article' }}
       </button>
     </form>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({ middleware: ['auth'] })
 
-const router = useRouter()
 const { data: categories } = await useFetch('/api/categories')
 const title = ref('')
 const content = ref('')
 const categoryId = ref<number | undefined>()
 const error = ref('')
 const loading = ref(false)
+const submitted = ref(false)
 
 async function submit() {
   error.value = ''
@@ -47,7 +58,7 @@ async function submit() {
       method: 'POST',
       body: { title: title.value, content: content.value, categoryId: categoryId.value },
     })
-    router.push('/communaute')
+    submitted.value = true
   } catch (e: any) {
     error.value = e.data?.message || 'Erreur lors de l\'envoi'
   } finally {
