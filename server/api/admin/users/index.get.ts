@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
     username: users.username,
     email: users.email,
     role: users.role,
+    active: users.active,
     reputation: users.reputation,
     createdAt: users.createdAt,
   }).from(users).orderBy(desc(users.createdAt)).all()

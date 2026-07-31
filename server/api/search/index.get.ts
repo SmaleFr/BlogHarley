@@ -20,5 +20,11 @@ export default defineEventHandler(async (event) => {
     LIMIT 10
   `)
 
-  return { articles: foundArticles, community: foundCommunity }
+  const foundForum = await db.all(sql`
+    SELECT id, title, slug, substr(content, 1, 150) as excerpt, 'forum' as type FROM forum_questions
+    WHERE title LIKE ${searchTerm} OR content LIKE ${searchTerm}
+    LIMIT 10
+  `)
+
+  return { articles: foundArticles, community: foundCommunity, forum: foundForum }
 })
