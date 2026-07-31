@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-4xl mx-auto px-4 py-12">
     <h1 class="text-3xl font-bold mb-2">Résultats de recherche</h1>
-    <p class="text-gray-500 mb-8">{{ results?.articles?.length || 0 + results?.community?.length || 0 }} résultat(s) pour "{{ q }}"</p>
+    <p class="text-gray-500 mb-8">{{ totalResults }} résultat(s) pour "{{ q }}"</p>
 
     <div v-if="results?.articles?.length" class="mb-8">
       <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
@@ -40,6 +40,8 @@ const route = useRoute()
 const q = computed(() => (route.query.q as string) || '')
 
 const { data: results } = await useFetch(() => `/api/search?q=${encodeURIComponent(q.value)}`)
+
+const totalResults = computed(() => (results.value?.articles?.length || 0) + (results.value?.community?.length || 0))
 
 useHead({ title: `Recherche : ${q.value || ''}` })
 </script>
