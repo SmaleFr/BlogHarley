@@ -35,7 +35,8 @@
             <th class="px-4 py-3 font-medium">Titre</th>
             <th class="px-4 py-3 font-medium">Catégorie</th>
             <th class="px-4 py-3 font-medium">Statut</th>
-            <th class="px-4 py-3 font-medium">Date</th>
+            <th class="px-4 py-3 font-medium">Créé le</th>
+            <th class="px-4 py-3 font-medium">Mis à jour le</th>
             <th class="px-4 py-3 font-medium">Actions</th>
           </tr>
         </thead>
@@ -49,6 +50,7 @@
               </span>
             </td>
             <td class="px-4 py-3 text-gray-500">{{ new Date(a.createdAt).toLocaleDateString('fr-FR') }}</td>
+            <td class="px-4 py-3 text-gray-500">{{ new Date(a.updatedAt).toLocaleDateString('fr-FR') }}</td>
             <td class="px-4 py-3">
               <button @click="edit(a)" class="text-blue-600 hover:underline text-xs mr-2">Modifier</button>
               <button @click="remove(a.id)" class="text-red-600 hover:underline text-xs">Supprimer</button>
@@ -64,7 +66,7 @@
 definePageMeta({ layout: 'admin', middleware: ['admin'] })
 
 const { data: categories } = await useFetch('/api/categories')
-const { data: articles, refresh } = await useFetch('/api/blog')
+const { data: articles, refresh } = await useFetch('/api/admin/articles')
 
 const showForm = ref(false)
 const editing = ref<any>(null)
