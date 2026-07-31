@@ -45,7 +45,9 @@ Articles officiels regroupés par catégories Harley-Davidson :
 
 - Filtre par catégorie
 - Recherche full-text
-- Interface admin d'ajout de catégories (sans code)
+- Rendu markdown du contenu
+- Date de publication et date de dernière édition affichées
+- Interface admin de création et édition de catégories (sans code)
 
 ### 💬 Forum Q&A
 Questions/réponses type Stack Overflow :
@@ -54,9 +56,11 @@ Questions/réponses type Stack Overflow :
 - Acceptation de la meilleure réponse
 - Tri : Récentes / Populaires / Non résolues
 - Système de réputation
+- **Signalement de messages** : chaque question/réponse peut être signalée (avec motif), puis traitée par un admin/modérateur (suppression ou classement sans suite)
 
 ### 👥 Communauté
 - Soumission d'articles par les utilisateurs
+- Message de confirmation après soumission
 - File de modération (approbation/refus avec motif)
 - Section distincte "Articles de la communauté"
 - Badge "Soumis par [utilisateur]"
@@ -64,6 +68,7 @@ Questions/réponses type Stack Overflow :
 ### 💼 Emplois & Prestations
 - Types : CDI, CDD, Freelance, Stage, Prestation
 - Dépôt d'offres avec modération anti-spam
+- Message de confirmation après dépôt
 - Filtres par type
 - Page détail avec contact
 
@@ -73,12 +78,18 @@ Questions/réponses type Stack Overflow :
 - Rôles : admin, moderator, user
 - Middleware de protection des routes
 
+### 🔎 Recherche
+- Recherche full-text sur les articles blog publiés
+- Recherche étendue aux articles communauté approuvés et aux questions du forum
+- Compteur de résultats fiabilisé
+
 ### ⚙️ Administration
 - Dashboard avec statistiques
-- CRUD articles et catégories
+- CRUD articles et catégories (création, édition, suppression)
 - Modération des articles communauté
 - Gestion des offres d'emploi
-- Gestion des utilisateurs et rôles
+- Gestion des utilisateurs : changement de rôle et **désactivation/bannissement** de comptes
+- Traitement des **signalements du forum** (suppression du message ou classement sans suite)
 
 ## Installation
 
@@ -147,7 +158,7 @@ BlogHarley/
 │   │   ├── forum/           # Q&A
 │   │   ├── communaute/      # Articles communauté
 │   │   ├── emplois/         # Offres d'emploi
-│   │   ├── admin/           # Administration
+│   │   ├── admin/           # Administration (dashboard, modération, signalements, utilisateurs, catégories, emplois, articles)
 │   │   ├── connexion.vue
 │   │   ├── inscription.vue
 │   │   └── recherche/       # Recherche
@@ -157,11 +168,11 @@ BlogHarley/
 │   ├── api/
 │   │   ├── auth/            # Login, register, logout
 │   │   ├── blog/            # CRUD articles
-│   │   ├── forum/           # Questions & réponses
+│   │   ├── forum/           # Questions, réponses, signalements
 │   │   ├── community/       # Articles communauté
 │   │   ├── jobs/            # Offres d'emploi
-│   │   ├── admin/           # Admin endpoints
-│   │   ├── search/          # Recherche
+│   │   ├── admin/           # Admin endpoints (dashboard, modération, signalements, users, catégories)
+│   │   ├── search/          # Recherche (articles + communauté + forum)
 │   │   ├── vote.post.ts     # Vote system
 │   │   └── categories.get.ts
 │   ├── middleware/
@@ -170,6 +181,7 @@ BlogHarley/
 │       ├── db.ts            # Connexion Drizzle
 │       ├── schema.ts        # Schéma de la base
 │       ├── session.ts       # Gestion des sessions h3
+│       ├── forum.ts         # Suppression en cascade questions/réponses + votes
 │       └── seed.ts          # Données de démonstration
 ├── drizzle.config.ts
 ├── nuxt.config.ts
@@ -209,6 +221,7 @@ BlogHarley/
 - `GET /api/forum/:slug` — Question + réponses
 - `POST /api/forum/:id/answers` — Répondre
 - `PUT /api/forum/answers/:id/accept` — Accepter réponse
+- `POST /api/forum/report` — Signaler une question/réponse
 
 ### Communauté
 - `GET /api/community` — Articles approuvés
@@ -223,15 +236,18 @@ BlogHarley/
 ### Autres
 - `GET /api/categories` — Toutes catégories
 - `POST /api/vote` — Voter (+1/-1)
-- `GET /api/search?q=` — Recherche
+- `GET /api/search?q=` — Recherche (articles, communauté, forum)
 - `GET /api/admin` — Dashboard stats
 - `GET /api/admin/moderation` — File modération
 - `PUT /api/admin/moderation/:id` — Approuver/rejeter
 - `GET /api/admin/jobs` — Offres à modérer
 - `PUT /api/admin/jobs/:id` — Approuver/désactiver
 - `GET /api/admin/users` — Liste utilisateurs
-- `PUT /api/admin/users/:id` — Changer rôle
+- `PUT /api/admin/users/:id` — Changer rôle / désactiver le compte
+- `GET /api/admin/forum-reports` — Signalements du forum
+- `PUT /api/admin/forum-reports/:id` — Traiter (supprimer / classer sans suite)
 - `POST /api/admin/categories` — Créer catégorie
+- `PUT /api/admin/categories/:id` — Modifier catégorie
 - `DELETE /api/admin/categories/:id` — Supprimer catégorie
 
 ## Licence
