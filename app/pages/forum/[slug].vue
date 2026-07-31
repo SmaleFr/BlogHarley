@@ -22,6 +22,11 @@
               <span>{{ question.author?.username }}</span>
               <span>•</span>
               <span>Posée le {{ new Date(question.createdAt).toLocaleDateString('fr-FR') }}</span>
+              <template v-if="user">
+                <span>•</span>
+                <button v-if="!reportedIds.has('question-' + question.id)" @click="report('question', question.id)" class="hover:text-red-500 transition">Signaler</button>
+                <span v-else class="text-red-400">Signalé</span>
+              </template>
             </div>
           </div>
         </div>
@@ -49,6 +54,11 @@
                     <span>{{ answer.author?.username }}</span>
                     <span>•</span>
                     <span>{{ new Date(answer.createdAt).toLocaleDateString('fr-FR') }}</span>
+                    <template v-if="user">
+                      <span>•</span>
+                      <button v-if="!reportedIds.has('answer-' + answer.id)" @click="report('answer', answer.id)" class="hover:text-red-500 transition">Signaler</button>
+                      <span v-else class="text-red-400">Signalé</span>
+                    </template>
                   </div>
                   <div class="flex items-center gap-2">
                     <span v-if="answer.isAccepted" class="text-green-600 text-xs font-semibold">✓ Acceptée</span>
@@ -121,6 +131,20 @@ async function acceptAnswer(answerId: number) {
     await $fetch(`/api/forum/answers/${answerId}/accept`, { method: 'PUT' })
     refresh()
   } catch {}
+}
+
+const reportedIds = ref(new Set<string>())
+
+async function report(targetType: 'question' | 'answer', targetId: number) {
+  const key = `${targetType}-${targetId}`
+  if (reportedIds.value.has(key)) return
+  const reason = prompt('Pourquoi signalez-vous ce message ? (optionnel)') || undefined
+  try {
+    await $fetch('/api/forum/report', { method: 'POST', body: { targetType, targetId, reason } })
+    reportedIds.value.add(key)
+  } catch (e: any) {
+    alert(e.data?.message || 'Erreur lors du signalement')
+  }
 }
 
 useHead({ title: question.value?.title || 'Question' })

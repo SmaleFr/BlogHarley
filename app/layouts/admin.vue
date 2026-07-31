@@ -20,6 +20,9 @@
         <NuxtLink to="/admin/moderation" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-harley-silver hover:text-white hover:bg-gray-800 transition">
           Modération
         </NuxtLink>
+        <NuxtLink to="/admin/signalements" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-harley-silver hover:text-white hover:bg-gray-800 transition">
+          Signalements forum
+        </NuxtLink>
         <NuxtLink to="/admin/emplois" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-harley-silver hover:text-white hover:bg-gray-800 transition">
           Offres d'emploi
         </NuxtLink>
@@ -51,6 +54,7 @@ const pageTitle = computed(() => {
     'admin-articles': 'Articles',
     'admin-categories': 'Catégories',
     'admin-moderation': 'Modération',
+    'admin-signalements': 'Signalements forum',
     'admin-emplois': 'Offres d\'emploi',
     'admin-utilisateurs': 'Utilisateurs',
   }

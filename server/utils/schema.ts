@@ -101,6 +101,16 @@ export const votes = sqliteTable('votes', {
   uniqueVote: uniqueIndex('unique_vote').on(table.userId, table.targetType, table.targetId),
 }))
 
+export const forumReports = sqliteTable('forum_reports', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  targetType: text('target_type', { enum: ['question', 'answer'] }).notNull(),
+  targetId: integer('target_id').notNull(),
+  reporterId: integer('reporter_id').references(() => users.id).notNull(),
+  reason: text('reason'),
+  status: text('status', { enum: ['pending', 'resolved', 'dismissed'] }).notNull().default('pending'),
+  createdAt: text('created_at').notNull().default(sql`(current_timestamp)`),
+})
+
 export const jobs = sqliteTable('jobs', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   title: text('title').notNull(),

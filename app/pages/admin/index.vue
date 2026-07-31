@@ -18,6 +18,10 @@
         <p class="text-sm text-gray-500">Offres en attente</p>
         <p class="text-3xl font-bold text-yellow-600">{{ stats.pendingJobs }}</p>
       </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <p class="text-sm text-gray-500">Signalements forum</p>
+        <p class="text-3xl font-bold text-yellow-600">{{ stats.pendingReports }}</p>
+      </div>
     </div>
   </div>
 </template>
