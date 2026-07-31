@@ -11,16 +11,14 @@
     </div>
 
     <div class="flex flex-wrap gap-2 mb-8">
-      <NuxtLink to="/blog" class="px-4 py-2 rounded-full text-sm font-medium border transition"
-        :class="$route.params.slug ? 'border-gray-300 text-gray-600 hover:border-harley-orange' : 'bg-harley-orange text-white border-harley-orange'">
+      <NuxtLink to="/blog" class="px-4 py-2 rounded-full text-sm font-medium border transition bg-harley-orange text-white border-harley-orange">
         Tous
       </NuxtLink>
       <NuxtLink
         v-for="cat in categories"
         :key="cat.id"
         :to="`/blog/categorie/${cat.slug}`"
-        class="px-4 py-2 rounded-full text-sm font-medium border transition"
-        :class="cat.slug === $route.params.slug ? 'bg-harley-orange text-white border-harley-orange' : 'border-gray-300 text-gray-600 hover:border-harley-orange'"
+        class="px-4 py-2 rounded-full text-sm font-medium border transition border-gray-300 text-gray-600 hover:border-harley-orange"
       >
         {{ cat.name }}
       </NuxtLink>
@@ -52,8 +50,7 @@
 
 <script setup lang="ts">
 const { user } = useUserSession()
-const route = useRoute()
 
 const { data: categories } = await useFetch('/api/categories')
-const { data: articles } = await useFetch(`/api/blog${route.params.slug ? `?categorie=${route.params.slug}` : ''}`)
+const { data: articles } = await useFetch('/api/blog')
 </script>
