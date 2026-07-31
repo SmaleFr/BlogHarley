@@ -1,3 +1,7 @@
+import { db } from '~~/server/utils/db'
+import { users } from '~~/server/utils/schema'
+import { eq } from 'drizzle-orm'
+
 export interface SessionUser {
   id: number
   username: string
@@ -20,7 +24,17 @@ export async function getUserSession(event: any) {
     password: process.env.NUXT_SESSION_SECRET || 'dev-secret-key-change-in-production-blog-harley-2024',
     maxAge: 60 * 60 * 24 * 7,
   })
-  return session.data as { user?: SessionUser }
+  const data = session.data as { user?: SessionUser }
+
+  if (data.user) {
+    const dbUser = await db.select({ active: users.active }).from(users).where(eq(users.id, data.user.id)).get()
+    if (!dbUser || !dbUser.active) {
+      await session.clear()
+      return { user: undefined }
+    }
+  }
+
+  return data
 }
 
 export async function clearUserSession(event: any) {

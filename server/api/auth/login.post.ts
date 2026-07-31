@@ -22,6 +22,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Email ou mot de passe incorrect' })
   }
 
+  if (!user.active) {
+    throw createError({ statusCode: 403, message: 'Ce compte a été désactivé' })
+  }
+
   await setUserSession(event, {
     user: {
       id: user.id,
