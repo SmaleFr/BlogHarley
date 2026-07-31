@@ -37,20 +37,44 @@ useHead({
   title: article.value?.title || 'Article',
 })
 
+function escapeHtml(text: string) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function formatInline(text: string) {
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+}
+
+const headingStyles: Record<number, string> = {
+  1: 'text-3xl font-black mt-10 mb-4',
+  2: 'text-2xl font-bold text-harley-orange mt-8 mb-4',
+  3: 'text-xl font-bold mt-6 mb-3',
+}
+
 const renderedContent = computed(() => {
   if (!article.value?.content) return ''
+
   return article.value.content
-    .replace(/^### (.+)$/gm, '<h3 class="text-xl font-bold mt-6 mb-3">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-harley-orange mt-8 mb-4">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-black mt-10 mb-4">$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc text-gray-700">$1</li>')
-    .replace(/\n\n/g, '</p><p class="mb-4 text-gray-700 leading-relaxed">')
-    .replace(/^(.+)$/gm, (match: string) => {
-      if (match.startsWith('<')) return match
-      if (match.startsWith('http')) return match
-      return match
+    .split(/\n\n+/)
+    .map((block: string) => {
+      const lines = block.split('\n').filter(Boolean)
+      if (!lines.length) return ''
+
+      const headingMatch = lines.length === 1 && lines[0].match(/^(#{1,3})\s+(.+)$/)
+      if (headingMatch) {
+        const level = headingMatch[1].length
+        return `<h${level} class="${headingStyles[level]}">${formatInline(headingMatch[2])}</h${level}>`
+      }
+
+      if (lines.every((line: string) => line.startsWith('- '))) {
+        const items = lines.map((line: string) => `<li class="ml-4 list-disc text-gray-700">${formatInline(line.slice(2))}</li>`).join('')
+        return `<ul class="mb-4 space-y-1">${items}</ul>`
+      }
+
+      return `<p class="mb-4 text-gray-700 leading-relaxed">${lines.map(formatInline).join('<br />')}</p>`
     })
-  return `<p class="mb-4 text-gray-700 leading-relaxed">${article.value.content.replace(/\n\n/g, '</p><p class="mb-4 text-gray-700 leading-relaxed">').replace(/\n/g, '<br />')}</p>`
+    .join('')
 })
 </script>
