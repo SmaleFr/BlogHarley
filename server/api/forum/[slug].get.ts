@@ -1,6 +1,6 @@
 import { db } from '~~/server/utils/db'
 import { forumQuestions, forumAnswers, users } from '~~/server/utils/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
 
   if (!question) throw createError({ statusCode: 404, message: 'Question non trouvée' })
 
-  await db.update(forumQuestions).set({ views: forumQuestions.views + 1 }).where(eq(forumQuestions.slug, slug)).run()
+  await db.update(forumQuestions).set({ views: sql`${forumQuestions.views} + 1` }).where(eq(forumQuestions.slug, slug)).run()
 
   const answers = await db.select({
     id: forumAnswers.id,

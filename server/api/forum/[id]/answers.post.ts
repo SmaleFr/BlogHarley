@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { db } from '~~/server/utils/db'
 import { forumAnswers, forumQuestions } from '~~/server/utils/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 const bodySchema = z.object({
   content: z.string().min(1),
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
   }).returning()
 
   await db.update(forumQuestions).set({
-    answersCount: forumQuestions.answersCount + 1,
+    answersCount: sql`${forumQuestions.answersCount} + 1`,
   }).where(eq(forumQuestions.id, id)).run()
 
   return answer
